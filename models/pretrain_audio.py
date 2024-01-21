@@ -61,7 +61,6 @@ def finetune_resnet(model, args):
 
     import os
     path = os.path.join(args.out_dir, "resnet18_ESC50.pkl")
-    with open(path, "wb") as f:
-        pickle.dump(path, f)
+    torch.save(model, path)
 
     return model

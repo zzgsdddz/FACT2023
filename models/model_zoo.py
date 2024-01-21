@@ -61,11 +61,12 @@ def get_model(args, backbone_name="resnet18_cub", full_model=False):
         from pytorchcv.model_provider import get_model as ptcv_get_model
         from .pretrain_audio import finetune_resnet
         import os.path
-        if not os.path.isfile(os.path.join(args.out_dir, "resnet18_ESC50.pkl")):
-            model = ptcv_get_model(backbone_name, pretrained=True, root=args.out_dir)
+        model = ptcv_get_model(backbone_name, pretrained=True, root=args.out_dir)
+
+        if not os.path.isfile(os.path.join(args.out_dir, "resnet18_ESC50.pkl")):    # finetune
             model = finetune_resnet(model, args)
         else:
-            model = torch.load(os.path.join(args.out_dir, "resnet18_ESC50.pkl"))
+            model.load_state_dict(os.path.join(args.out_dir, "resnet18_ESC50.pkl"))    # load existing model
         backbone = ResNetBottom(model)
         preprocess = transforms.Compose([
             # transforms.Resize(224),
