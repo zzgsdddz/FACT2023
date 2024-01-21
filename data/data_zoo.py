@@ -64,6 +64,15 @@ def get_dataset(args, preprocess=None):
         classes = list(class_to_idx.keys())
 
 
+    elif args.dataset == "esc-50":
+        from .constants import ESC_50, ESC_50_META
+        from .esc_50 import load_esc_data
+        num_classes = 50
+        train_loader, test_loader, idx_to_class = load_esc_data(ESC_50, ESC_50_META)
+        class_to_idx = {v:k for k,v in idx_to_class.items()}
+        classes = list(class_to_idx.keys())
+
+
     else:
         raise ValueError(args.dataset)
 

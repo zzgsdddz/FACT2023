@@ -29,6 +29,7 @@ def config():
     parser.add_argument("--num-epochs", default=20, type=int)
     parser.add_argument("--lr", default=0.01, type=float)
     parser.add_argument("--l2-penalty", default=0.001, type=float)
+    parser.add_argument("--num-workers", default=4, type=int)
     return parser.parse_args()
 
 

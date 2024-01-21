@@ -56,6 +56,24 @@ def get_model(args, backbone_name="resnet18_cub", full_model=False):
                         transforms.ToTensor(),
                         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                       ])
+        
+    elif backbone_name == "resnet18":
+        from pytorchcv.model_provider import get_model as ptcv_get_model
+        from .pretrain_audio import finetune_resnet
+        import os.path
+        if not os.path.isfile(os.path.join(args.out_dir, "resnet18_ESC50.pkl")):
+            model = ptcv_get_model(backbone_name, pretrained=True, root=args.out_dir)
+            model = finetune_resnet(model, args)
+        else:
+            model = torch.load(os.path.join(args.out_dir, "resnet18_ESC50.pkl"))
+        backbone = ResNetBottom(model)
+        preprocess = transforms.Compose([
+            # transforms.Resize(224),
+            # transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+
     else:
         raise ValueError(backbone_name)
 

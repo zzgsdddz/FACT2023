@@ -6,12 +6,14 @@ import clip
 import argparse
 import numpy as np
 from tqdm import tqdm
+from datasets import load_dataset
+from transformers import AutoTokenizer, ClapModel
 
 
 def config():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out-dir", required=True, type=str)
-    parser.add_argument("--classes", default="cifar10", type=str)
+    parser.add_argument("--out-dir", required=False, default="/home/ken/Documents/Uva/Jaar4/FACT/clap_out", type=str)
+    parser.add_argument("--classes", default="esc50", type=str)
     parser.add_argument("--backbone-name", default="clip:RN50", type=str)
     parser.add_argument("--device", default="cuda", type=str)
     parser.add_argument("--recurse", default=1, type=int, help="How many times to recurse on the conceptnet graph")
@@ -119,30 +121,57 @@ def learn_conceptbank(args, concept_list, scenario):
     concept_dict = {}
     for concept in tqdm(concept_list):
         # Note: You can try other forms of prompting, e.g. "photo of {concept}" etc. here.
-        text = clip.tokenize(f"{concept}").to("cuda")
-        text_features = model.encode_text(text).cpu().numpy()
-        text_features = text_features/np.linalg.norm(text_features)
+
+        # Get text features 
+
+        # text = clip.tokenize(f"{concept}").to("cuda")
+        # text_features = model.encode_text(text).cpu().numpy()
+        # text_features = text_features/np.linalg.norm(text_features)
+
+        # Assuming 'concept' is your text input and 'model' and 'tokenizer' are already defined as shown previously
+        inputs = tokenizer(concept, padding=True, return_tensors="pt").to("cpu")
+        text_features = model.get_text_features(**inputs).cpu().numpy()
+        text_features = text_features / np.linalg.norm(text_features, axis=1, keepdims=True)
+
+
         # store concept vectors in a dictionary. Adding the additional terms to be consistent with the
         # `ConceptBank` class (see `concepts/concept_utils.py`).
         concept_dict[concept] = (text_features, None, None, 0, {})
 
     print(f"# concepts: {len(concept_dict)}")
-    concept_dict_path = rf"conceptbanks/multimodal_concept_{args.backbone_name}_{scenario}_recurse-{args.recurse}.pkl"
+    concept_dict_path = os.path.join(args.out_dir, f"multimodal_concept_{args.backbone_name}_{scenario}_recurse:{args.recurse}.pkl")
     pickle.dump(concept_dict, open(concept_dict_path, 'wb'))
     print(f"Dumped to : {concept_dict_path}")
 
 
 if __name__ == "__main__":
     args = config()
-    model, _ = clip.load(args.backbone_name.split(":")[1], device=args.device, download_root=args.out_dir)
+
+    # Loading Clap model and tokenizer
+    model = ClapModel.from_pretrained("laion/clap-htsat-unfused")
+
+    tokenizer = AutoTokenizer.from_pretrained("laion/clap-htsat-unfused")
+    # model, _ = clip.load(args.backbone_name.split(":")[1], device=args.device, download_root=args.out_dir)
     concept_cache = {}
     
-    if args.classes == "cifar10":
-        # Pull CIFAR10 to get the class names.
-        from torchvision import datasets
-        cifar10_ds = datasets.CIFAR10(root=args.out_dir, train=True, download=True)
-        # Get the class names.
-        all_classes = list(cifar10_ds.classes)
+    if args.classes == "esc50":
+        # Pull esc50 to get the class names.
+        print("loading dataset")
+        dataset = load_dataset("ashraq/esc50")
+
+        audio_sample = dataset["train"]["audio"][0]["array"]
+        # Assuming the dataset is already loaded and 'train' split is available
+        unique_categories = set()
+
+        # Iterate over all rows in the 'train' split to extract unique category names
+        for sample in dataset['train']:
+            unique_categories.add(sample['category'])
+
+        # Convert the set to a list if you need it in list format
+        all_classes = list(unique_categories)
+        print(len(all_classes))
+        assert(all_classes != 50)
+        print("passed assert")
         # Get the names of all concepts.
         all_concepts = get_concept_data(all_classes)
         # Clean the concepts for uniques, plurals etc. 
