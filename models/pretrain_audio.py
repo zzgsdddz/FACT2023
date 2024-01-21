@@ -61,6 +61,6 @@ def finetune_resnet(model, args):
 
     import os
     path = os.path.join(args.out_dir, "resnet18_ESC50.pkl")
-    torch.save(model, path)
+    torch.save(model.state_dict(), path)
 
     return model
