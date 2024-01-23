@@ -19,7 +19,7 @@ def get_projections(args, backbone, posthoc_layer, loader):
     all_projs, all_embs, all_lbls = None, None, None
     for batch in tqdm(loader):
         batch_X, batch_Y = unpack_batch(batch)
-        batch_X = batch_X.to(args.device)
+        batch_X = batch_X.to(args.device, dtype=torch.float32)
         if "clip" in args.backbone_name:
             embeddings = backbone.encode_image(batch_X).detach().float()
         else:

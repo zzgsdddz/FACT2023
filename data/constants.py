@@ -25,3 +25,9 @@ BRODEN_CONCEPTS = "C:/Users/lenna/Documents/UvA/FACT/post-hoc-cbm/data/downloads
 # ESC 50 Environmental sounds
 ESC_50 = "C:/Users/lenna/Documents/UvA/FACT/post-hoc-cbm/data/downloads/ESC-50-master"
 ESC_50_META = os.path.join(ESC_50, "meta")
+
+#FSD Audio Data
+FSD = "C:/Users/lenna/Documents/UvA/FACT/post-hoc-cbm/data/downloads/FSD_Kaggle_2018"
+FSD_META = os.path.join(FSD, "FSDKaggle2018.meta")
+FSD_TRAIN = os.path.join(FSD, "FSDKaggle2018.audio_train")
+FSD_TEST = os.path.join(FSD, "FSDKaggle2018.audio_test")

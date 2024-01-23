@@ -42,7 +42,7 @@ def get_melspectrogram_db(file_path, sr=None, n_fft=2048, hop_length=512, n_mels
   return spec_db
 
 
-class ESC50Data(Dataset):
+class FSDData(Dataset):
   def __init__(self, base, df, in_col, out_col):
     self.df = df
     self.data = []
@@ -57,28 +57,29 @@ class ESC50Data(Dataset):
       row = df.iloc[ind]
       file_path = os.path.join(base,row[in_col])
       self.data.append(spec_to_image(get_melspectrogram_db(file_path))[np.newaxis,...])
-      self.labels.append(self.c2i[row['category']])
+      self.labels.append(self.c2i[row['label']])
   def __len__(self):
     return len(self.data)
   def __getitem__(self, idx):
     return self.data[idx], self.labels[idx]
   
 
-def load_esc_data(ESC_50, ESC_50_META):
-    df = pd.read_csv(os.path.join(ESC_50_META, 'esc50.csv'))
-    train = df[df['fold']!=5]
-    test = df[df['fold']==5] 
+def load_fsd_data(FSD_META, FSD_TRAIN, FSD_TEST):
+    train = pd.read_csv(os.path.join(FSD_META, 'train_post_competition.csv'))
+    test = pd.read_csv(os.path.join(FSD_META, 'test_post_competition_scoring_clips.csv'))
 
-    train_data = ESC50Data(os.path.join(ESC_50, 'audio'), train, 'filename', 'category')
+    train_data = FSDData(FSD_TRAIN, train, 'fname', 'label')
 
 
-    test_data = ESC50Data(os.path.join(ESC_50, 'audio'), test, 'filename', 'category')
+    test_data = FSDData(FSD_TEST, test, 'fname', 'label')
 
 
     train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=64, shuffle=True)
 
     idx_to_class = {v: k for k, v in train_data.c2i.items()}
+    for k,v in test_data.c2i.items():
+      idx_to_class.update({v:k})
 
     return train_loader, test_loader, idx_to_class
 

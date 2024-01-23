@@ -3,6 +3,7 @@ from data.esc_50 import load_esc_data
 import torch.nn as nn
 import torch
 import pickle
+import tqdm
 
 class ResNet(nn.Module):
     def __init__(self, original_model):
@@ -14,42 +15,44 @@ class ResNet(nn.Module):
         return x
     
 
-def train_one_epoch(model, optimizer, training_loader, loss_fn):
-    running_loss = 0.
-    last_loss = 0.
+def train_one_epoch(model, optimizer, train_loader, loss_fn, device, epochs=50, change_lr=None):
+# def train(model, loss_fn, train_loader, valid_loader, epochs, optimizer, train_losses, valid_losses, change_lr=None):
+    for epoch in tqdm(range(1,epochs+1)):
+        model.train()
+        batch_losses=[]
+        if change_lr:
+            optimizer = change_lr(optimizer, epoch)
+        for i, data in enumerate(train_loader):
+            x, y = data
+            optimizer.zero_grad()
+            x = x.to(device, dtype=torch.float32)
+            y = y.to(device, dtype=torch.long)
+            y_hat = model(x)
+            loss = loss_fn(y_hat, y)
+            loss.backward()
+            batch_losses.append(loss.item())
+            optimizer.step()
+            # train_losses.append(batch_losses)
+            # print(f'Epoch - {epoch} Train-Loss : {np.mean(train_losses[-1])}')
 
-    # Here, we use enumerate(training_loader) instead of
-    # iter(training_loader) so that we can track the batch
-    # index and do some intra-epoch reporting
-    for i, data in enumerate(training_loader):
-        # Every data instance is an input + label pair
-        inputs, labels = data
-
-        # Zero your gradients for every batch!
-        optimizer.zero_grad()
-
-        # Make predictions for this batch
-        outputs = model(inputs)
-
-        # Compute the loss and its gradients
-        loss = loss_fn(outputs, labels)
-        loss.backward()
-
-        # Adjust learning weights
-        optimizer.step()
-
-        # Gather data and report
-        running_loss += loss.item()
-        if i % 1000 == 999:
-            last_loss = running_loss / 1000 # loss per batch
-            print('  batch {} loss: {}'.format(i + 1, last_loss))
-            running_loss = 0.
-
-    return last_loss
     
+def eval(model, validation_loader, device):
+    with torch.no_grad():
+        num_correct = 0
+        num_samples = 0
+        for i, vdata in enumerate(validation_loader):
+            x, y = vdata
+            x = x.to(device, dtype=torch.float32)
+            y = y.to(device, dtype=torch.long)
+            scores = model(x)
+            _, predictions = scores.max(1)
+            num_correct += (predictions == y).sum()
+            num_samples += predictions.size(0)
+    print(f"test_acc: {float(num_correct)/float(num_samples)*100:.2f}")
+
 
 def finetune_resnet(model, args):
-    train_loader, _, _ = load_esc_data(ESC_50, ESC_50_META)
+    train_loader, test_loader, _ = load_esc_data(ESC_50, ESC_50_META)
 
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.0001, momentum=0.9)
@@ -59,8 +62,10 @@ def finetune_resnet(model, args):
         loss = train_one_epoch(model, optimizer, train_loader, loss_fn)
         print(f"loss: {loss}")
 
+    eval(model, test_loader, args.device)
+
     import os
-    path = os.path.join(args.out_dir, "resnet18_ESC50.pkl")
+    path = os.path.join(args.out_dir, "resnet18_ESC50.pth")
     torch.save(model.state_dict(), path)
 
     return model

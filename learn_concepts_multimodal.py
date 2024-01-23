@@ -127,7 +127,10 @@ def learn_conceptbank(args, concept_list, scenario):
         concept_dict[concept] = (text_features, None, None, 0, {})
 
     print(f"# concepts: {len(concept_dict)}")
-    concept_dict_path = rf"conceptbanks/multimodal_concept_{args.backbone_name}_{scenario}_recurse-{args.recurse}.pkl"
+    if args.backbone_name == 'clip:RN50':
+        concept_dict_path = rf"conceptbanks/multimodal_concept_RN-50_{scenario}_recurse-{args.recurse}.pkl"
+    else:
+        concept_dict_path = rf"conceptbanks/multimodal_concept_{args.backbone_name}_{scenario}_recurse-{args.recurse}.pkl"
     pickle.dump(concept_dict, open(concept_dict_path, 'wb'))
     print(f"Dumped to : {concept_dict_path}")
 

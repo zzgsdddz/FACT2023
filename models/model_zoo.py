@@ -63,16 +63,43 @@ def get_model(args, backbone_name="resnet18_cub", full_model=False):
         import os.path
         model = ptcv_get_model(backbone_name, pretrained=True, root=args.out_dir)
 
-        if not os.path.isfile(os.path.join(args.out_dir, "resnet18_ESC50.pkl")):    # finetune
+        if not os.path.isfile(os.path.join(args.out_dir, "resnet18_ESC50.pth")):    # finetune
             model = finetune_resnet(model, args)
         else:
-            model.load_state_dict(os.path.join(args.out_dir, "resnet18_ESC50.pkl"))    # load existing model
+            model.load_state_dict(torch.load(os.path.join(args.out_dir, "resnet18_ESC50.pth")))    # load existing model
         backbone = ResNetBottom(model)
         preprocess = transforms.Compose([
             # transforms.Resize(224),
             # transforms.CenterCrop(224),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+
+    elif backbone_name == "resnet34":
+        from .pretrain_audio import finetune_resnet
+        import os.path
+        from torchvision.models import resnet34
+        
+        # if args.dataset == 'esc-50':
+        #     datapath = "esc50resnet34.pth"
+        # else:
+        #     datapath = "FSD_resnet34.pth"
+
+        if not os.path.isfile(os.path.join(args.out_dir, "FSD_resnet34.pth")):    # finetune
+            model = resnet34(pretrained=True)
+            model.fc = nn.Linear(512,50)
+            model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+            model = model.to(args.device)
+            model = finetune_resnet(model, args)
+        else:
+            model = torch.load(os.path.join(args.out_dir, "FSD_resnet34.pth"))    # load existing model
+            model = model.to(args.device)
+        backbone = ResNetBottom(model)
+        preprocess = transforms.Compose([
+            # transforms.Resize(224),
+            # transforms.CenterCrop(224),
+            # transforms.ToTensor(),
+            # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
     else:
