@@ -175,5 +175,22 @@ if __name__ == "__main__":
             all_concepts = list(set(all_concepts).difference(set(all_classes)))
         learn_conceptbank(args, all_concepts, args.classes)
 
+    elif args.classes == "coco":
+        all_classes = []
+        with open("C:/Users/lenna/Documents/UvA/FACT/post-hoc-cbm/data/downloads/COCO-stuff/labels.txt",'r') as f:
+            for line in f.readlines():
+                all_classes.append(line.split(': ')[1][:-1])
+        all_classes = sorted(all_classes)
+        all_concepts = get_concept_data(all_classes)
+        all_concepts = clean_concepts(all_concepts)
+        all_concepts = list(set(all_concepts).difference(set(all_classes)))
+        # If we'd like to recurse in the conceptnet graph, specify `recurse > 1`.
+        for i in range(1, args.recurse):
+            all_concepts = get_concept_data(all_concepts)
+            all_concepts = list(set(all_concepts))
+            all_concepts = clean_concepts(all_concepts)
+            all_concepts = list(set(all_concepts).difference(set(all_classes)))
+        learn_conceptbank(args, all_concepts, args.classes)
+
     else:
         raise ValueError(f"Unknown classes: {args.classes}. Define your dataset here!")
