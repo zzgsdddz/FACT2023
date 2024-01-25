@@ -72,6 +72,15 @@ def get_dataset(args, preprocess=None):
         class_to_idx = {v:k for k,v in idx_to_class.items()}
         classes = list(class_to_idx.keys())
 
+    elif args.dataset == "fsd":
+        from data.fsd_kaggle_2018 import load_fsd_data
+        from data.constants import FSD_META, FSD_TEST, FSD_TRAIN
+
+        train_loader, test_loader, idx_to_class = load_fsd_data(FSD_META, FSD_TRAIN, FSD_TEST)
+        num_classes = 50
+        class_to_idx = {v:k for k,v in idx_to_class.items()}
+        classes = list(class_to_idx.keys())
+
 
     else:
         raise ValueError(args.dataset)

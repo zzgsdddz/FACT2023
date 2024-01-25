@@ -102,6 +102,20 @@ def get_model(args, backbone_name="resnet18_cub", full_model=False):
             # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
+    elif backbone_name == "HTSAT":
+        from transformers import ClapAudioModel
+        model = ClapAudioModel.from_pretrained("laion/clap-htsat-fused").audio_encoder
+        # model.load_state_dict(torch.load("C:/Users/lenna/Documents/UvA/FACT/post-hoc-cbm/data/HTSAT_ESC_exp=1_fold=0_acc=0.970.ckpt"))
+        # model = torch.load(os.path.join(args.out_dir, "FSD_resnet34.pth"))    # load existing model
+        model = model.to(args.device)
+        backbone = ResNetBottom(model)
+        preprocess = transforms.Compose([
+            # transforms.Resize(224),
+            # transforms.CenterCrop(224),
+            # transforms.ToTensor(),
+            # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+
     else:
         raise ValueError(backbone_name)
 

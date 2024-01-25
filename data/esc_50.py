@@ -12,10 +12,12 @@ preprocess = transforms.Compose([
             # transforms.Grayscale(num_output_channels=3),
             # transforms.Lambda(lambda x: x.repeat(3,1,1)),   # go from 1 channel to 3
             # transforms.Lambda(lambda x: torch.squeeze(x,0)),
-            transforms.Resize((224,224)),
-            transforms.CenterCrop((224,224)),
-            transforms.Lambda(lambda x: x.expand(3, -1, -1)),
+            # transforms.Resize((224,224)),
+            # transforms.CenterCrop((224,224)),
+            # transforms.Lambda(lambda x: x.expand(3, -1, -1)),
             # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+            transforms.Resize((256,256)),
+            transforms.CenterCrop((256,256)),
         ])
 
 
@@ -79,6 +81,8 @@ def load_esc_data(ESC_50, ESC_50_META):
     test_loader = DataLoader(test_data, batch_size=64, shuffle=True)
 
     idx_to_class = {v: k for k, v in train_data.c2i.items()}
+    for k,v in test_data.c2i.items():
+      idx_to_class.update({v:k})
 
     return train_loader, test_loader, idx_to_class
 

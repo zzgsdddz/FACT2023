@@ -8,6 +8,8 @@ import numpy as np
 from tqdm import tqdm
 from datasets import load_dataset
 from transformers import AutoTokenizer, ClapModel
+from numpy import genfromtxt
+
 
 
 def config():
@@ -80,6 +82,21 @@ def get_concept_data(all_classes):
     return all_concepts
 
 
+def get_concept_data2(all_classes):
+    import pandas as pd
+    all_concepts = set()
+    # Collect concepts that are relevant to each class
+    # data = genfromtxt('/home/ken/Documents/Uva/Jaar4/FACT/clap_gpt_concept.csv', delimiter=',')
+
+    df = pd.read_csv('C:/Users/lenna/Documents/UvA/FACT/post-hoc-cbm/data/clap_gpt_concepts_20each.csv', sep=',', header=None)
+    data = df.to_numpy().flatten()
+
+    print(len(data))
+    print(data)
+    
+    return set(data)
+
+
 def clean_concepts(scenario_concepts):
     """
     Clean the plurals, trailing whitespaces etc.
@@ -95,6 +112,7 @@ def clean_concepts(scenario_concepts):
     scenario_concepts_rec = []
     for c_prev in scenario_concepts:
         c = c_prev
+        if type(c) != str: continue
         c = c.strip()
         c_subwords = c.split(" ")
         # If a concept is made of more than 2 words, we drop it.
@@ -139,7 +157,10 @@ def learn_conceptbank(args, concept_list, scenario):
         concept_dict[concept] = (text_features, None, None, 0, {})
 
     print(f"# concepts: {len(concept_dict)}")
-    concept_dict_path = os.path.join(args.out_dir, f"multimodal_concept_{args.backbone_name}_{scenario}_recurse:{args.recurse}.pkl")
+    if args.backbone_name == 'clip:RN50':
+        concept_dict_path = os.path.join(args.out_dir, f"multimodal_concept_clap_{scenario}_recurse-{args.recurse}.pkl")
+    else:
+        concept_dict_path = os.path.join(args.out_dir, f"multimodal_concept_{args.backbone_name}_{scenario}_recurse-{args.recurse}.pkl")
     pickle.dump(concept_dict, open(concept_dict_path, 'wb'))
     print(f"Dumped to : {concept_dict_path}")
 
@@ -173,13 +194,13 @@ if __name__ == "__main__":
         assert(all_classes != 50)
         print("passed assert")
         # Get the names of all concepts.
-        all_concepts = get_concept_data(all_classes)
+        all_concepts = get_concept_data2(all_classes)
         # Clean the concepts for uniques, plurals etc. 
         all_concepts = clean_concepts(all_concepts)     
         all_concepts = list(set(all_concepts).difference(set(all_classes)))
         # If we'd like to recurse in the conceptnet graph, specify `recurse > 1`.
         for i in range(1, args.recurse):
-            all_concepts = get_concept_data(all_concepts)
+            all_concepts = get_concept_data2(all_concepts)
             all_concepts = list(set(all_concepts))
             all_concepts = clean_concepts(all_concepts)
             all_concepts = list(set(all_concepts).difference(set(all_classes)))

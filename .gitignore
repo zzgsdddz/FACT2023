@@ -129,3 +129,8 @@ dmypy.json
 .pyre/
 
 conceptbanks
+data/clap_gpt_concept.csv
+data/clap_gpt_concepts_10each.csv
+data/clap_gpt_concepts_20each.csv
+data/HTSAT_ESC_exp=1_fold=0_acc=0.970.ckpt
+models/attribute_importance.png
