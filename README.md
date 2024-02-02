@@ -26,6 +26,9 @@ For the CLAP backbone, it can be downloaded here: [Huggingface](https://huggingf
 
 The pre-training of the ResNet34 model for the audio domain can be run via `models/audio_resnet.ipynb`. The saved model will then automatically be loaded during PCBM training.
 
+## Training the baselines
+The code for training the baseline models can be found in `baselines/`. For the audio pcbm, the baseline performance can be tested in the `models/audio_resnet.ipynb` file.
+
 # Learning Concepts
 In our paper, we propose two different ways to learn concepts activations vectors to build concepts banks.
 
