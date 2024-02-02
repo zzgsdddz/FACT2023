@@ -66,9 +66,9 @@ python3 learn_concepts_multimodal.py --backbone-name="clip:RN50" --classes=cifar
 
 Currently, we support CIFAR10/CIFAR100 for this approach. You can very easily add the set of class names in the script and obtain the concept bank for your own purpose. 
 
-To train concepts using CLAP, the code can be found in `clap.py TODO`. You can run the following script to learn the concept vectors:
+To train concepts using CLAP, the code can be found in `clap_concepts.py`. Within the code, the default argument for the file path should be adjusted, or the file path to the concept csv file passed as a command line argument. You can run the following script to learn the concept vectors:
 ```
-python3 learn_clap TODO
+python3 clap_concepts.py
 ```
 
 **Limitation**: This approach is limited to the multimodal models that have a shared embedding space. Existing multimodal models that are not specialized may not do very well with domain-specific concepts (e.g. healthcare concepts).
