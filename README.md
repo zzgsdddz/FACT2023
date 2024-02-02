@@ -81,10 +81,7 @@ python3 train_pcbm.py --concept-bank="${OUTPUT_DIR}/cub_resnet18_cub_0.1_100.pkl
 Please see the `train_pcbm.py` file for the arguments / where the models are saved. 
 
 For the Audio PCBM, the ResNet PCBM can be trained using the above script by passing "resnet34" as the backbone-name argument. 
-The transformer model can be trained using the following script:
-```
-python3 HTSAT_audio_pcbm.py
-```
+
 
 **Limitation**: There is a tradeoff between the regularization and how sparse/"interpretable" (yes, hard to define what exactly this means) the linear module is. This hyperparameter selection can be a bit tedious. We can play around with the `lam` parameter and `alpha` parameter to observe the concept coefficients and understand what seems like a good tradeoff. Good thing is, we can simply monitor concept weights, and since concepts are more meaningful, we may have a better say here.
 
@@ -98,6 +95,10 @@ python3 train_pcbm_h.py --concept-bank="${OUTPUT_DIR}/cub_resnet18_cub_0.1_100.p
 
 ## HTSAT FILES
 To train the HTSAT for the pcbm and pcbm-h, use the seperate HTSAT_audio_pcbm files.
+The transformer PCBM model can be trained using the following script:
+```
+python3 HTSAT_audio_pcbm.py
+```
 For the PCBM-h the following script can be run:
 ```
 python3 HTSAT_audio_pcbm-h.py
