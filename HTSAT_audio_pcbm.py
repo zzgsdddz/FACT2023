@@ -29,8 +29,8 @@ from torch.utils.data import Dataset
 
 def config():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--concept-bank", default="/home/ken/Documents/Uva/Jaar4/FACT/FACT2023-main/clap.pkl", required=False, type=str, help="Path to the concept bank")
-    parser.add_argument("--out-dir", default="/home/ken/Documents/Uva/Jaar4/FACT/FACT2023-main/", required=False, type=str, help="Output folder for model/run info.")
+    parser.add_argument("--concept-bank", default="./", required=True, type=str, help="Path to the concept bank")
+    parser.add_argument("--out-dir", default="./", required=True, type=str, help="Output folder for model/run info.")
     parser.add_argument("--dataset", default="esc-50", type=str)
     parser.add_argument("--backbone-name", default="HTSAT", type=str)
     parser.add_argument("--device", default="cpu", type=str)
