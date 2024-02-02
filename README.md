@@ -94,3 +94,6 @@ Once you have the PCBM, you can train the PCBM-h model by running the following 
 pcbm_path="/path/to/pcbm_cub__resnet18_cub__cub_resnet18_cub_0__lam:0.0002__alpha:0.99__seed:42.ckpt"
 python3 train_pcbm_h.py --concept-bank="${OUTPUT_DIR}/cub_resnet18_cub_0.1_100.pkl" --pcbm-path=$pcbm_path --out-dir=$OUTPUT_DIR --dataset="cub"
 ```
+
+## HTSAT FILES
+To train the HTSAT for the pcbm and pcbm-h, use the seperate HTSAT_audio_pcbm files.
