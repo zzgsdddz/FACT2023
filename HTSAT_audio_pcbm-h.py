@@ -22,9 +22,9 @@ from torch.utils.data import Dataset
 
 def config():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out-dir", default="./", required=False, type=str, help="Output folder")
-    parser.add_argument("--pcbm-path", default="./", required=False, type=str, help="Trained PCBM module.")
-    parser.add_argument("--concept-bank", default=".", required=False, type=str, help="Path to the concept bank.")
+    parser.add_argument("--out-dir", default="./", required=True, type=str, help="Output folder")
+    parser.add_argument("--pcbm-path", default="./", required=True, type=str, help="Trained PCBM module.")
+    parser.add_argument("--concept-bank", default=".", required=True, type=str, help="Path to the concept bank.")
     parser.add_argument("--device", default="cpu", type=str)
     parser.add_argument("--batch-size", default=64, type=int)
     parser.add_argument("--dataset", default="HTSAT", type=str)
