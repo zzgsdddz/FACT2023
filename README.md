@@ -16,7 +16,7 @@ Below we list the data sources to download the datasets we used to train / evalu
 | HAM10k | Skin lesion classification dataset | [Kaggle Link](https://www.kaggle.com/kmader/skin-cancer-mnist-ham10000) |))
 |CIFAR10, CIFAR100 | Standard CIFAR datasets | These are automatically downloaded via torchvision. |
 |Broden Concept Dataset | This dataset is mostly inherited from the Broden Dataset, thanks to [Amirata Ghorbani](https://www.amiratag.com/) and [Abubakar Abid](https://twitter.com/abidlabs). | [Can be downloaded from this gdrive folder.](https://drive.google.com/file/d/1_yxGcveFcKetoB783H3iv3oiqXHYArT-/view?usp=share_link) |
-| ESC-50| Environmental Audio Dataset |[download here]((https://github.com/karolpiczak/ESC-50)) |
+| ESC-50| Environmental Audio Dataset |[download here](https://github.com/karolpiczak/ESC-50) |
 | FSDKaggle2018| Freesound Audio Dataset |[download here](https://zenodo.org/records/2552860) |
 
 
