@@ -80,7 +80,7 @@ python3 train_pcbm.py --concept-bank="${OUTPUT_DIR}/cub_resnet18_cub_0.1_100.pkl
 ```
 Please see the `train_pcbm.py` file for the arguments / where the models are saved. 
 
-For the Audio PCBM, the transformer model can be trained using the following script:
+For the Audio PCBM, the ResNet PCBM can be trained using the above script by passing "resnet34" as the backbone-name argument. The transformer model can be trained using the following script:
 ```
 python3 transformer TODO
 ```
