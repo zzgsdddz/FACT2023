@@ -20,6 +20,21 @@ import torch
 from tqdm import tqdm
 from torch.utils.data import Dataset
 
+def config():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out-dir", default="./", required=False, type=str, help="Output folder")
+    parser.add_argument("--pcbm-path", default="./", required=False, type=str, help="Trained PCBM module.")
+    parser.add_argument("--concept-bank", default=".", required=False, type=str, help="Path to the concept bank.")
+    parser.add_argument("--device", default="cpu", type=str)
+    parser.add_argument("--batch-size", default=64, type=int)
+    parser.add_argument("--dataset", default="HTSAT", type=str)
+    parser.add_argument("--seed", default=42, type=int, help="Random seed")
+    parser.add_argument("--num-epochs", default=20, type=int)
+    parser.add_argument("--lr", default=0.01, type=float)
+    parser.add_argument("--l2-penalty", default=0.001, type=float)
+    parser.add_argument("--num-workers", default=4, type=int)
+    return parser.parse_args()
+
 class AverageMeter(object):
     def __init__(self):
         self.reset()
@@ -308,22 +323,6 @@ class AudioDataset(Dataset):
 
         return inputs, label
     
-
-
-def config():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--out-dir", default="/home/ken/Documents/Uva/Jaar4/FACT/FACT2023-main/pcbm-h-results/", required=False, type=str, help="Output folder")
-    parser.add_argument("--pcbm-path", default="/home/ken/Documents/Uva/Jaar4/FACT/FACT2023-main/pcbm_esc-50__HTSAT__clap__lam-1e-05__alpha-0.99__seed-42.ckpt", required=False, type=str, help="Trained PCBM module.")
-    parser.add_argument("--concept-bank", default="/home/ken/Documents/Uva/Jaar4/FACT/FACT2023-main/clap.pkl", required=False, type=str, help="Path to the concept bank.")
-    parser.add_argument("--device", default="cpu", type=str)
-    parser.add_argument("--batch-size", default=64, type=int)
-    parser.add_argument("--dataset", default="HTSAT", type=str)
-    parser.add_argument("--seed", default=42, type=int, help="Random seed")
-    parser.add_argument("--num-epochs", default=20, type=int)
-    parser.add_argument("--lr", default=0.01, type=float)
-    parser.add_argument("--l2-penalty", default=0.001, type=float)
-    parser.add_argument("--num-workers", default=4, type=int)
-    return parser.parse_args()
 
 
 @torch.no_grad()
