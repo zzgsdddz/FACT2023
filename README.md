@@ -24,6 +24,8 @@ Below we list the data sources to download the datasets we used to train / evalu
 Please see `models/model_zoo.py` for the backbones we used. Some models rely on external dependencies (e.g. [pytorchcv](https://pypi.org/project/pytorchcv/) for the CUB backbone, [OpenAI repo](https://github.com/openai/CLIP) for the CLIP backbone.) or will be downloaded (e.g. HAM1000 model from the [DDI repo](https://drive.google.com/drive/folders/1oQ53WH_Tp6rcLZjRp_-UBOQcMl-b1kkP)). 
 For the CLAP backbone, it can be downloaded here: [Huggingface](https://huggingface.co/docs/transformers/model_doc/clap). If you want to add your own model, please edit `models/model_zoo.py`.
 
+The pre-training of the ResNet34 model for the audio domain can be run via `models/audio_resnet.ipynb`. The saved model will then automatically be loaded during PCBM training.
+
 # Learning Concepts
 In our paper, we propose two different ways to learn concepts activations vectors to build concepts banks.
 
