@@ -1,8 +1,6 @@
 # Reproduction of "Post-hoc Concept Bottleneck Models"
 
-This is the joint work of [Mert Yuksekgonul](https://cs.stanford.edu/~merty), [Maggie Wang](https://www.linkedin.com/in/maggie-wang-038b55194/), and [James Zou](https://www.james-zou.com/).
-
-Here is an overview of our work, and you can find more in our [Preprint](https://arxiv.org/abs/2205.15480) (soon to be updated).
+We are reproducing the results of (https://arxiv.org/abs/2205.15480) and adding our own extension to the audio domain. Large parts of our code are taken directly from the authors and can be found at: (https://github.com/mertyg/post-hoc-cbm).
 
 ![Overview](./assets/overview.png)
 
@@ -18,10 +16,13 @@ Below we list the data sources to download the datasets we used to train / evalu
 | HAM10k | Skin lesion classification dataset | [Kaggle Link](https://www.kaggle.com/kmader/skin-cancer-mnist-ham10000) |))
 |CIFAR10, CIFAR100 | Standard CIFAR datasets | These are automatically downloaded via torchvision. |
 |Broden Concept Dataset | This dataset is mostly inherited from the Broden Dataset, thanks to [Amirata Ghorbani](https://www.amiratag.com/) and [Abubakar Abid](https://twitter.com/abidlabs). | [Can be downloaded from this gdrive folder.](https://drive.google.com/file/d/1_yxGcveFcKetoB783H3iv3oiqXHYArT-/view?usp=share_link) |
+| ESC-50| Environmental Audio Dataset |[download here]((https://github.com/karolpiczak/ESC-50)) |
+| FSDKaggle2018| Freesound Audio Dataset |[download here](https://zenodo.org/records/2552860) |
 
 
 ## Downloading the backbones
-Please see `models/model_zoo.py` for the backbones we used. Some models rely on external dependencies (e.g. [pytorchcv](https://pypi.org/project/pytorchcv/) for the CUB backbone, [OpenAI repo](https://github.com/openai/CLIP) for the CLIP backbone.) or will be downloaded (e.g. HAM1000 model from the [DDI repo](https://drive.google.com/drive/folders/1oQ53WH_Tp6rcLZjRp_-UBOQcMl-b1kkP)). If you want to add your own model, please edit `models/model_zoo.py`.
+Please see `models/model_zoo.py` for the backbones we used. Some models rely on external dependencies (e.g. [pytorchcv](https://pypi.org/project/pytorchcv/) for the CUB backbone, [OpenAI repo](https://github.com/openai/CLIP) for the CLIP backbone.) or will be downloaded (e.g. HAM1000 model from the [DDI repo](https://drive.google.com/drive/folders/1oQ53WH_Tp6rcLZjRp_-UBOQcMl-b1kkP)). 
+For the CLAP backbone, it can be downloaded here: [Huggingface](https://huggingface.co/docs/transformers/model_doc/clap). If you want to add your own model, please edit `models/model_zoo.py`.
 
 # Learning Concepts
 In our paper, we propose two different ways to learn concepts activations vectors to build concepts banks.
@@ -60,6 +61,11 @@ python3 learn_concepts_multimodal.py --backbone-name="clip:RN50" --classes=cifar
 
 Currently, we support CIFAR10/CIFAR100 for this approach. You can very easily add the set of class names in the script and obtain the concept bank for your own purpose. 
 
+To train concepts using CLAP, the code can be found in `clap.py TODO`. You can run the following script to learn the concept vectors:
+```
+python3 learn_clap TODO
+```
+
 **Limitation**: This approach is limited to the multimodal models that have a shared embedding space. Existing multimodal models that are not specialized may not do very well with domain-specific concepts (e.g. healthcare concepts).
 
 # Training PCBMs
@@ -69,6 +75,10 @@ python3 train_pcbm.py --concept-bank="${OUTPUT_DIR}/cub_resnet18_cub_0.1_100.pkl
 ```
 Please see the `train_pcbm.py` file for the arguments / where the models are saved. 
 
+For the Audio PCBM, the transformer model can be trained using the following script:
+```
+python3 transformer TODO
+```
 
 **Limitation**: There is a tradeoff between the regularization and how sparse/"interpretable" (yes, hard to define what exactly this means) the linear module is. This hyperparameter selection can be a bit tedious. We can play around with the `lam` parameter and `alpha` parameter to observe the concept coefficients and understand what seems like a good tradeoff. Good thing is, we can simply monitor concept weights, and since concepts are more meaningful, we may have a better say here.
 
