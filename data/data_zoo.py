@@ -63,6 +63,77 @@ def get_dataset(args, preprocess=None):
         class_to_idx = {v:k for k,v in idx_to_class.items()}
         classes = list(class_to_idx.keys())
 
+    
+    elif args.dataset == "esc-50" and args.backbone_name == "HTSAT":
+        from datasets import load_dataset
+        from sklearn.model_selection import train_test_split
+        from .esc_50 import AudioDataset
+        from torch.utils.data import DataLoader
+        from torch.utils.data import Subset
+        import pandas as pd
+
+        dataset = load_dataset("ashraq/esc50")
+        # processor = AutoProcessor.from_pretrained("laion/clap-htsat-fused")
+        train_dataset = pd.DataFrame(dataset['train'])
+        # train_dataset = dataset['train']
+
+        # train_data = Subset(train_dataset, np.arange(0,1800))
+        # test_data = Subset(train_dataset, np.arange(1800,2000))
+        # print(AudioDataset(test_data)['audio'][0])
+
+        # Split the data - 80% for training and 20% for testing
+        train_data, test_data = train_test_split(train_dataset, test_size=0.2, random_state=42)
+
+        train_dataset = AudioDataset(train_data)
+        test_dataset = AudioDataset(test_data)
+
+        train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+        test_loader = DataLoader(test_dataset, batch_size=64, shuffle=True)
+
+        # Extract class names for each sample
+        class_names_per_sample = dataset['train']['category']
+
+        # Extract unique class names and sort them to ensure consistency
+        classes = sorted(set(class_names_per_sample))
+
+        # Create a mapping from index to class name
+        idx_to_class = {i: class_name for i, class_name in enumerate(classes)}
+        # print(idx_to_class)
+
+    elif args.dataset == "audioset" and args.backbone_name == "HTSAT":
+        from datasets import load_dataset
+        from sklearn.model_selection import train_test_split
+        from .esc_50 import AudioDataset
+        from torch.utils.data import DataLoader
+        import pandas as pd
+
+        dataset = load_dataset("agkphysics/AudioSet")
+        # processor = AutoProcessor.from_pretrained("laion/clap-htsat-fused")
+        train_dataset = pd.DataFrame(dataset['train'])
+        # train_dataset = dataset['train']
+
+        # train_data = Subset(train_dataset, np.arange(0,1800))
+        # test_data = Subset(train_dataset, np.arange(1800,2000))
+        # print(AudioDataset(test_data)['audio'][0])
+
+        # Split the data - 80% for training and 20% for testing
+        train_data, test_data = train_test_split(train_dataset, test_size=0.2, random_state=42)
+
+        train_dataset = AudioDataset(train_data)
+        test_dataset = AudioDataset(test_data)
+
+        train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+        test_loader = DataLoader(test_dataset, batch_size=64, shuffle=True)
+
+        # Extract class names for each sample
+        class_names_per_sample = dataset['train']['category']
+
+        # Extract unique class names and sort them to ensure consistency
+        classes = sorted(set(class_names_per_sample))
+
+        # Create a mapping from index to class name
+        idx_to_class = {i: class_name for i, class_name in enumerate(classes)}
+        # print(idx_to_class)
 
     elif args.dataset == "esc-50":
         from .constants import ESC_50, ESC_50_META

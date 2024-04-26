@@ -6,6 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 import torch
 from tqdm import tqdm
+from transformers import AutoProcessor
 
 preprocess = transforms.Compose([
             transforms.ToTensor(),
@@ -19,6 +20,30 @@ preprocess = transforms.Compose([
             transforms.Resize((256,256)),
             transforms.CenterCrop((256,256)),
         ])
+
+
+class AudioDataset(Dataset):
+    def __init__(self, data):
+        self.data = data
+        self.processor = AutoProcessor.from_pretrained("laion/clap-htsat-fused")
+
+    def __len__(self):
+        # Assuming the length of the dataset is the length of 'audio' key
+        return len(self.data["audio"])
+
+    def __getitem__(self, idx):
+        # Accessing the audio data
+        audio_sample = self.data["audio"][idx]["array"]
+
+
+        # Processing the audio data
+        inputs = self.processor(audios=audio_sample, return_tensors="pt")
+        inputs["input_features"] = inputs["input_features"][0]
+
+        # Accessing the label/target
+        label = self.data["target"][idx]
+
+        return inputs, label
 
 
 def spec_to_image(spec, eps=1e-6):
@@ -45,7 +70,7 @@ def get_melspectrogram_db(file_path, sr=None, n_fft=2048, hop_length=512, n_mels
 
 
 class ESC50Data(Dataset):
-  def __init__(self, base, df, in_col, out_col):
+  def __init__(self, base, df, in_col, out_col, transformer=True):
     self.df = df
     self.data = []
     self.labels = []
@@ -58,6 +83,10 @@ class ESC50Data(Dataset):
     for ind in tqdm(range(len(df))):
       row = df.iloc[ind]
       file_path = os.path.join(base,row[in_col])
+      # if transformer:
+      #    processor = AutoProcessor.from_pretrained("laion/clap-htsat-fused")
+      #    self.data.append(processor(file_path, return_tensors="pt"))
+      # else:
       self.data.append(spec_to_image(get_melspectrogram_db(file_path))[np.newaxis,...])
       self.labels.append(self.c2i[row['category']])
   def __len__(self):
